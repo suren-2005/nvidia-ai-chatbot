@@ -1,0 +1,22 @@
+# Python environment folders
+venv/
+.venv/
+api_env/
+env/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Python generated files
+__pycache__/
+*.py[cod]
+
+# Jupyter generated files
+.ipynb_checkpoints/
+
+# Editor and operating-system files
+.vscode/
+.DS_Store
+Thumbs.db

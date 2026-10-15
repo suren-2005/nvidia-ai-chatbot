@@ -1,0 +1,118 @@
+# pip install os
+Purpose: Interact with os features, including environment variables.
+code uses:
+api_key = os.getenv("NVIDIA_API_KEY")
+How it works:
+1. os gives Python access to operating-system functions.
+2. getenv() retrieves an environment variable.
+3. "NVIDIA_API_KEY" is the name of the variable.
+4. The API key is stored in the api_key variable.
+
+# from openai import OpenAI**
+Purpose: Use the OpenAI-compatible Python client to communicate with NVIDIA's API.
+code uses:
+client = OpenAI(
+    base_url="https://integrate.api.nvidia.com/v1",
+    api_key=api_key
+)
+How it works:
+1. OpenAI is the client class provided by the openai package.
+2. base_url changes the API destination from OpenAI's service to NVIDIA's compatible endpoint.
+3. api_key provides your NVIDIA authentication credential.
+4. client is the object you'll use to send requests.
+
+# Later, this line sends your request:**
+response = client.chat.completions.create(
+    model="openai/gpt-oss-20b",
+    messages=messages,
+    max_tokens=512,
+    temperature=0.6
+)
+- The selected model should be available in the nvidia account
+
+# from dotenv import load_dotenv**
+Purpose: Load variables from a .env file into your process environment.
+Your code:
+load.env()
+In our project the .env has:
+NVIDIA_API_KEY = paste_the_key
+load_dotenv() reads the .env file and makes the variable available to os.getenv().
+Without loading the file, os.getenv() may return None if you haven't set the environment variable separately.
+
+# How the import together**
+                                .env file
+                           (contains the secret API)
+                                       ↓
+                                load_dotenv()
+                            (Loads the environment variable)
+                                        ↓
+                                    os.getenv()
+                                (Retrieves the API key)
+                                        ↓
+                                    OpenAI() client
+                        (Uses the key to communicate with NVIDIA's API)
+
+# Understanding the rest of your chatbot**
+
+**Code	                What it does**
+if not api_key:         Checks whether the API key is missing.
+raise ValueError(...)	Stops execution with an understandable error.
+messages = [...]	    Stores the conversation history.
+"role": "system"	    Sets the chatbot's behavior and instructions.
+"role": "user"	        Represents a message from the user.
+"role": "assistant"	    Represents a reply from the AI.
+input("You: ")	        Waits for you to type a message.
+while True:	            Repeats the conversation until you exit.
+try and except	        Handles API errors without immediately crashing the chatbot.
+messages.append(...)	Adds new messages to the conversation history.
+
+# temperature and max_tokens
+**temperature=0.6:** 
+Controls the randomness of generated responses. Lower values generally produce more predictable answers.
+**max_tokens=512:** 
+Limits the length of the generated response, subject to the model's limits.
+
+# client send request to the API
+code:
+client = OpenAI(
+    base_url="https://integrate.api.nvidia.com/v1",
+    api_key=api_key
+)
+Here's what happens:
+- OpenAI() creates the Python API client.
+- base_url tells the client which server to contact.
+- api_key authenticates your application with NVIDIA.
+- client stores this configuration so you can make requests.
+Later, when you run:
+response = client.chat.completions.create(
+    model="openai/gpt-oss-20b",
+    messages=messages
+)
+The SDK sends the request to this full endpoint:
+**Base URL**
+https://integrate.api.nvidia.com/v1
+        +
+**Chat endpoint path**
+/chat/completions
+        ↓
+**Final request URL**
+https://integrate.api.nvidia.com/v1/chat/completions
+
+NVIDIA's API accepts the chat request, runs the selected model, and returns the generated answer.
+
+-------------------------------------------------------
+# understand what we're building
+
+**Streamlit frontend**
+(Chat input, buttons, message history and layout)
+
+        ↓ 
+
+Python application
+(Handles the conversation and API calls)
+
+        ↓   (Authenticated API request)
+
+NVIDIA-hosted LLM
+(Generates the answer)
+                                   
